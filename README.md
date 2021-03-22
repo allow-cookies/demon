@@ -1,6 +1,6 @@
-# DEMON
+# DeMon
 
-**DEMON** is a **DE**pendency **MON**itoring tool. It allows you to list and monitor all
+**DeMon** is a **DE**pendency **MON**itoring tool. It allows you to list and monitor all
 the dependencies used across all of your projects. 
 
 ## Setup
