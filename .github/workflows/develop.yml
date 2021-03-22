@@ -26,10 +26,13 @@ jobs:
         pip-sync
     - name: Lint with flake8
       run: |
+        cd src
         flake8 . --count --show-source --statistics
     - name: Check type hinting with mypy
       run: |
+        cd src
         mypy .
     - name: Test with pytest
       run: |
+        cd src
         pytest
