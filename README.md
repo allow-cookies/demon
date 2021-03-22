@@ -1,6 +1,8 @@
-# DEMON
+# DeMon
 
-**DEMON** is a **DE**pendency **MON**itoring tool. It allows you to list and monitor all
+[![.github/workflows/develop.yml](https://github.com/allow-cookies/demon/actions/workflows/develop.yml/badge.svg?branch=develop)](https://github.com/allow-cookies/demon/actions/workflows/develop.yml)
+
+**DeMon** is a **DE**pendency **MON**itoring tool. It allows you to list and monitor all
 the dependencies used across all of your projects. 
 
 ## Setup
