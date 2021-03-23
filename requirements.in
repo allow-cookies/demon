@@ -7,6 +7,8 @@ django-cors-headers
 django-environ
 requests
 psycopg2-binary
+python-gitlab
+requirements-parser
 
 # dev
 black==20.8b1

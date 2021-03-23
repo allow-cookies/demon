@@ -13,5 +13,5 @@ class DependencyAdmin(ModelAdmin):
         Dependency.Fields.FROM_FILE,
     )
     search_fields = (Dependency.Fields.NAME,)
-    list_filter = (f"{Dependency.Fields.PROJECT}__{Project.Fields.NAME}",)
+    list_filter = (f"{Dependency.Fields.PROJECT}__{Project.Fields.PATH}",)
     ordering = (Dependency.Fields.NAME,)

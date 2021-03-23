@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     "shared",
     "project",
     "dependency",
+    "platform",
 ]
 
 MIDDLEWARE = [
@@ -70,3 +71,5 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 STATIC_URL = "/static/"
+
+GITLAB_PERSONAL_ACCESS_TOKEN = env("GITLAB_PERSONAL_ACCESS_TOKEN")
