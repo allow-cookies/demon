@@ -5,7 +5,9 @@ djangorestframework
 django-filter
 django-cors-headers
 django-environ
+celery
 requests
+redis
 psycopg2-binary
 python-gitlab
 requirements-parser

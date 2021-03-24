@@ -56,6 +56,12 @@ DATABASES = {
     "default": env.db(default="postgres://postgres:postgres@postgres:5432/postgres")
 }
 
+CACHES = {
+    "default": env.cache(
+        default="redis://redis:6379/1?client_class=django_redis.client.DefaultClient"
+    )
+}
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
@@ -64,6 +70,11 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
+
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://redis:6379/2")
+CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="redis://redis:6379/3")
+CELERY_DEFAULT_QUEUE = env("CELERY_DEFAULT_QUEUE", default="default")
+CELERY_BEAT_SCHEDULE = {}
 
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
