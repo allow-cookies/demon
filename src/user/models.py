@@ -33,6 +33,7 @@ class User(AbstractBaseUser, PermissionsMixin, UUIDModel):
         IS_SUPERUSER = "is_superuser"
         EMAIL = "email"
         IS_ACTIVE = "is_active"
+        PLATFORMS = "platforms"
 
     email = EmailField(max_length=255, unique=True)
     is_admin = BooleanField(default=False)

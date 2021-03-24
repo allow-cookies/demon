@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "dependency",
     "platform",
     "user",
+    "user_platform",
 ]
 
 MIDDLEWARE = [

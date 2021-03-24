@@ -31,6 +31,3 @@ class ProjectSync:
                     for dependency in project_dto.dependencies
                 ]
             )
-
-
-gitlab_sync = ProjectSync(platform_connector=GitLabConnector())

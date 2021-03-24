@@ -1,4 +1,5 @@
 from typing import Generator
+from uuid import UUID
 
 from django.conf import settings
 
@@ -8,18 +9,25 @@ from connector.base import PlatformConnector
 from dependency.dto import DependencyDTO
 from dependency.parser.provider import parser_provider
 from project.dto import ProjectDTO
+from user_platform.models import UserPlatform
 
 
 class GitLabConnector(PlatformConnector):
     PER_PAGE = 100
 
-    def __init__(self):
-        self._api = gitlab.Gitlab(
-            "http://gitlab.com", private_token=settings.GITLAB_PERSONAL_ACCESS_TOKEN
-        )
+    def __init__(self, user_id: UUID):
+        super().__init__(user_id=user_id)
+        url, token = self._fetch_credentials(user_id)
+        self._api = gitlab.Gitlab(url, private_token=token)
         self._registered_dependency_file_types = (
             parser_provider.list_registered_file_types()
         )
+
+    @staticmethod
+    def _fetch_credentials(user_id: UUID) -> tuple[str, str]:
+        return UserPlatform.objects.filter(
+            user_id=user_id, platform=UserPlatform.PlatformChoices.GITLAB.name
+        ).values_list(UserPlatform.Fields.URL, UserPlatform.Fields.TOKEN).first()
 
     def list_projects(self) -> Generator[ProjectDTO, None, None]:
         for group in self._api.groups.list(per_page=self.PER_PAGE):
