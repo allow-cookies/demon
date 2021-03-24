@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     "project",
     "dependency",
     "platform",
+    "user",
 ]
 
 MIDDLEWARE = [
@@ -70,6 +71,8 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
+
+AUTH_USER_MODEL = "user.User"
 
 CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://redis:6379/2")
 CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="redis://redis:6379/3")
