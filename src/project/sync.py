@@ -1,5 +1,4 @@
 from connector.base import PlatformConnector
-from connector.gitlab import GitLabConnector
 from dependency.models import Dependency
 from project.models import Project
 

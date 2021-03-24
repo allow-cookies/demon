@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from django.contrib.admin import register, ModelAdmin
+from django.contrib.admin import ModelAdmin, register
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import QuerySet
 
@@ -11,7 +11,6 @@ from user.tasks import sync_user_projects
 def perform_sync(modeladmin: UserAdmin, request: WSGIRequest, queryset: QuerySet):
     user_ids = queryset.values_list(User.Fields.ID, flat=True)
     for user_id in user_ids:
-        print(user_id)
         sync_user_projects.delay(user_id=user_id)
 
 

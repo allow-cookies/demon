@@ -16,16 +16,42 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='UserPlatform',
+            name="UserPlatform",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('platform', models.CharField(choices=[('GITHUB', 'Github'), ('GITLAB', 'GitLab'), ('BITBUCKET', 'Bitbucket')], max_length=31)),
-                ('url', models.URLField(max_length=255)),
-                ('token', models.CharField(max_length=255)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='platforms', related_query_name='platforms', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "platform",
+                    models.CharField(
+                        choices=[
+                            ("GITHUB", "Github"),
+                            ("GITLAB", "GitLab"),
+                            ("BITBUCKET", "Bitbucket"),
+                        ],
+                        max_length=31,
+                    ),
+                ),
+                ("url", models.URLField(max_length=255)),
+                ("token", models.CharField(max_length=255)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="platforms",
+                        related_query_name="platforms",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
     ]

@@ -1,9 +1,10 @@
 from __future__ import annotations
+
 from typing import Optional
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
-from django.db.models import EmailField, BooleanField
+from django.db.models import BooleanField, EmailField
 
 from shared.models import UUIDModel
 
@@ -17,7 +18,9 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email: str, password: Optional[str] = None, **kwargs) -> User:
+    def create_superuser(
+        self, email: str, password: Optional[str] = None, **kwargs
+    ) -> User:
         user = self.create_user(email=email, password=password, **kwargs)
         user.is_admin = True
         user.is_superuser = True

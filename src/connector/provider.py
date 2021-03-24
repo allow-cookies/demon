@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from typing import Type
 from uuid import UUID
 
@@ -11,7 +12,9 @@ class ConnectorProvider:
     def __init__(self):
         self._connectors: dict[str, Type[PlatformConnector]] = {}
 
-    def register(self, platform_name: str, platform_connector: Type[PlatformConnector]) -> ConnectorProvider:
+    def register(
+        self, platform_name: str, platform_connector: Type[PlatformConnector]
+    ) -> ConnectorProvider:
         self._connectors[platform_name] = platform_connector
         return self
 
@@ -20,10 +23,7 @@ class ConnectorProvider:
         return connector_class(user_id=user_id)
 
 
-connector_provider = (
-    ConnectorProvider()
-    .register(
-        platform_name=UserPlatform.PlatformChoices.GITLAB.name,
-        platform_connector=GitLabConnector,
-    )
+connector_provider = ConnectorProvider().register(
+    platform_name=str(UserPlatform.PlatformChoices.GITLAB),
+    platform_connector=GitLabConnector,
 )

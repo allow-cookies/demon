@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class UserPlatformConfig(AppConfig):
-    name = 'user_platform'
+    name = "user_platform"

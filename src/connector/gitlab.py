@@ -1,8 +1,6 @@
 from typing import Generator
 from uuid import UUID
 
-from django.conf import settings
-
 import gitlab
 
 from connector.base import PlatformConnector
@@ -25,9 +23,13 @@ class GitLabConnector(PlatformConnector):
 
     @staticmethod
     def _fetch_credentials(user_id: UUID) -> tuple[str, str]:
-        return UserPlatform.objects.filter(
-            user_id=user_id, platform=UserPlatform.PlatformChoices.GITLAB.name
-        ).values_list(UserPlatform.Fields.URL, UserPlatform.Fields.TOKEN).first()
+        return (
+            UserPlatform.objects.filter(
+                user_id=user_id, platform=str(UserPlatform.PlatformChoices.GITLAB)
+            )
+            .values_list(UserPlatform.Fields.URL, UserPlatform.Fields.TOKEN)
+            .first()
+        )
 
     def list_projects(self) -> Generator[ProjectDTO, None, None]:
         for group in self._api.groups.list(per_page=self.PER_PAGE):
