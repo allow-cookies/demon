@@ -9,6 +9,8 @@ from user_platform.models import UserPlatform
 
 
 class Sync:
+    _BATCH_SIZE = 100
+
     def __init__(self, platform_id: UUID):
         platform = UserPlatform.objects.get(id=platform_id)
         self._platform_id = platform_id
@@ -34,11 +36,14 @@ class Sync:
     def dependencies(self, project_id: UUID):
         Dependency.objects.filter(project_id=project_id).delete()
         Dependency.objects.bulk_create(
-            Dependency(
-                name=dependency.name,
-                version=dependency.version,
-                from_file=dependency.from_file,
-                project_id=project_id,
-            )
-            for dependency in self._connector.list_dependencies(project_id)
+            objs=(
+                Dependency(
+                    name=dependency.name,
+                    version=dependency.version,
+                    source_file=dependency.source_file,
+                    project_id=project_id,
+                )
+                for dependency in self._connector.list_dependencies(project_id)
+            ),
+            batch_size=self._BATCH_SIZE,
         )

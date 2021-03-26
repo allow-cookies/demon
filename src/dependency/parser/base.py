@@ -8,6 +8,6 @@ class BaseParser(ABC):
     @classmethod
     @abstractmethod
     def parse(
-        cls, from_file: str, contents: str
+        cls, source_file: str, contents: bytes
     ) -> Generator[DependencyDTO, None, None]:
         pass

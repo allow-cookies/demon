@@ -13,17 +13,17 @@ class Dependency(UUIDModel):
         NAME = "name"
         VERSION = "version"
         PROJECT = "project"
-        FROM_FILE = "from_file"
+        SOURCE_FILE = "source_file"
 
     name = CharField(max_length=255)
-    version = CharField(max_length=31)
+    version = CharField(max_length=63)
     project = ForeignKey(
         Project,
         on_delete=CASCADE,
         related_name=Project.Fields.DEPENDENCIES,
         related_query_name=Project.Fields.DEPENDENCIES,
     )
-    from_file = CharField(max_length=127)
+    source_file = CharField(max_length=127)
 
     def __str__(self):
         return self.name

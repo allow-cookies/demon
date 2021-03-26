@@ -9,7 +9,8 @@ class DependencyAdmin(ModelAdmin):
         Dependency.Fields.NAME,
         Dependency.Fields.VERSION,
         Dependency.Fields.PROJECT,
-        Dependency.Fields.FROM_FILE,
+        Dependency.Fields.SOURCE_FILE,
     )
     search_fields = (Dependency.Fields.NAME,)
+    list_filter = (Dependency.Fields.SOURCE_FILE,)
     ordering = (Dependency.Fields.NAME,)

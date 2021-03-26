@@ -29,6 +29,7 @@ class ProjectAdmin(ModelAdmin):
     search_fields = (
         Project.Fields.NAME,
         Project.Fields.DESCRIPTION,
+        Project.Fields.PATH,
     )
     ordering = (Project.Fields.PATH,)
     actions = (synchronize_project_dependencies,)

@@ -3,7 +3,8 @@ from __future__ import annotations
 from typing import Iterable, Type
 
 from dependency.parser.base import BaseParser
-from dependency.parser.python import RequirementsTxtParser
+from dependency.parser.javascript import PackageLockJsonParser, YarnLockParser
+from dependency.parser.python import PipfileLockParser, RequirementsTxtParser
 
 
 class ParserProvider:
@@ -21,4 +22,10 @@ class ParserProvider:
         return self._parsers.keys()
 
 
-parser_provider = ParserProvider().register("requirements.txt", RequirementsTxtParser)
+parser_provider = (
+    ParserProvider()
+    .register("requirements.txt", RequirementsTxtParser)
+    .register("Pipfile.lock", PipfileLockParser)
+    .register("package-lock.json", PackageLockJsonParser)
+    .register("yarn.lock", YarnLockParser)
+)

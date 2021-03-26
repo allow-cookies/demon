@@ -5,4 +5,4 @@ from dataclasses import dataclass
 class DependencyDTO:
     name: str
     version: str
-    from_file: str
+    source_file: str

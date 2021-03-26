@@ -1,7 +1,9 @@
+import logging
 from typing import Generator
 from uuid import UUID
 
 import gitlab
+from gitlab import GitlabGetError
 
 from connector.base import PlatformConnector
 from dependency.dto import DependencyDTO
@@ -55,11 +57,14 @@ class GitLabConnector(PlatformConnector):
             .first()
         )
         project = self._api.projects.get(external_project_id, lazy=True)
-        for item in project.repository_tree():
-            if item[self._FIELD_NAME] in self._registered_dependency_file_types:
-                contents = project.repository_raw_blob(item[self._FIELD_ID])
-                parser = parser_provider.provide(item[self._FIELD_NAME])
-                yield from parser.parse(
-                    from_file=item[self._FIELD_NAME], contents=str(contents)
-                )
+        try:
+            for item in project.repository_tree():
+                if item[self._FIELD_NAME] in self._registered_dependency_file_types:
+                    contents = project.repository_raw_blob(item[self._FIELD_ID])
+                    parser = parser_provider.provide(item[self._FIELD_NAME])
+                    yield from parser.parse(
+                        source_file=item[self._FIELD_NAME], contents=contents
+                    )
+        except GitlabGetError:
+            logging.info(f"Repository tree for project {project_id} not found")
         yield from ()
