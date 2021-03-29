@@ -4,7 +4,8 @@ from django.db.transaction import atomic
 
 from connector.provider import connector_provider
 from dependency.models import Dependency
-from project.models import Project
+from project.models import Project, ProjectDependency
+from shared.mappers import SourceFileToLanguageMapper
 from user_platform.models import UserPlatform
 
 
@@ -34,16 +35,32 @@ class Sync:
 
     @atomic
     def dependencies(self, project_id: UUID):
-        Dependency.objects.filter(project_id=project_id).delete()
-        Dependency.objects.bulk_create(
-            objs=(
-                Dependency(
+        project_dependency_versions = set()
+        dependency_name_id_map = {
+            name: index
+            for name, index in Dependency.objects.values_list(
+                Dependency.Fields.NAME, Dependency.Fields.ID
+            )
+        }
+        for dependency in self._connector.list_dependencies(project_id):
+            # TODO: add language filter as only name can end up with ambiguous results
+            index = dependency_name_id_map.get(dependency.name)
+            if index is None:
+                dep = Dependency.objects.create(
                     name=dependency.name,
+                    language=SourceFileToLanguageMapper.map(dependency.source_file),
+                )
+                index = dep.id
+                dependency_name_id_map[dependency.name] = index
+            project_dependency_versions.add(
+                ProjectDependency(
+                    dependency_id=index,
+                    project_id=project_id,
                     version=dependency.version,
                     source_file=dependency.source_file,
-                    project_id=project_id,
                 )
-                for dependency in self._connector.list_dependencies(project_id)
-            ),
-            batch_size=self._BATCH_SIZE,
+            )
+        ProjectDependency.objects.filter(project_id=project_id).delete()
+        ProjectDependency.objects.bulk_create(
+            objs=project_dependency_versions, batch_size=self._BATCH_SIZE
         )

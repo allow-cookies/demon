@@ -5,6 +5,7 @@ from typing import Iterable, Type
 from dependency.parser.base import BaseParser
 from dependency.parser.javascript import PackageLockJsonParser, YarnLockParser
 from dependency.parser.python import PipfileLockParser, RequirementsTxtParser
+from project.models import ProjectDependency
 
 
 class ParserProvider:
@@ -22,10 +23,12 @@ class ParserProvider:
         return self._parsers.keys()
 
 
+source_file_choices = ProjectDependency.SourceFileChoices
+
 parser_provider = (
     ParserProvider()
-    .register("requirements.txt", RequirementsTxtParser)
-    .register("Pipfile.lock", PipfileLockParser)
-    .register("package-lock.json", PackageLockJsonParser)
-    .register("yarn.lock", YarnLockParser)
+    .register(str(source_file_choices.REQUIREMENTS_TXT), RequirementsTxtParser)
+    .register(str(source_file_choices.PIPFILE_LOCK), PipfileLockParser)
+    .register(str(source_file_choices.PACKAGE_LOCK_JSON), PackageLockJsonParser)
+    .register(str(source_file_choices.YARN_LOCK), YarnLockParser)
 )

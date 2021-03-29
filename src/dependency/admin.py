@@ -7,10 +7,7 @@ from dependency.models import Dependency
 class DependencyAdmin(ModelAdmin):
     list_display = (
         Dependency.Fields.NAME,
-        Dependency.Fields.VERSION,
-        Dependency.Fields.PROJECT,
-        Dependency.Fields.SOURCE_FILE,
+        Dependency.Fields.LANGUAGE,
     )
     search_fields = (Dependency.Fields.NAME,)
-    list_filter = (Dependency.Fields.SOURCE_FILE,)
     ordering = (Dependency.Fields.NAME,)

@@ -4,10 +4,13 @@ from django.db.models import (
     CharField,
     DateTimeField,
     ForeignKey,
+    TextChoices,
     TextField,
     UniqueConstraint,
 )
+from django.utils.translation import gettext_lazy as _
 
+from dependency.models import Dependency
 from shared.models import UUIDModel
 from user_platform.models import UserPlatform
 
@@ -47,3 +50,32 @@ class Project(UUIDModel):
 
     def __str__(self):
         return self.path
+
+
+class ProjectDependency(UUIDModel):
+    class Fields(UUIDModel.Fields):
+        PROJECT = "project"
+        DEPENDENCY = "dependency"
+        VERSION = "version"
+        SOURCE_FILE = "source_file"
+
+    class SourceFileChoices(TextChoices):
+        REQUIREMENTS_TXT = "requirements.txt", _("requirements.txt")
+        PIPFILE_LOCK = "Pipfile.lock", _("Pipfile.lock")
+        PACKAGE_LOCK_JSON = "package-lock.json", _("package-lock.json")
+        YARN_LOCK = "yarn.lock", _("yarn.lock")
+
+    version = CharField(max_length=63)
+    dependency = ForeignKey(
+        Dependency,
+        on_delete=CASCADE,
+        related_name=Dependency.Fields.VERSIONS,
+        related_query_name=Dependency.Fields.VERSIONS,
+    )
+    project = ForeignKey(
+        Project,
+        on_delete=CASCADE,
+        related_name=Project.Fields.DEPENDENCIES,
+        related_query_name=Project.Fields.DEPENDENCIES,
+    )
+    source_file = CharField(max_length=63, choices=SourceFileChoices.choices)

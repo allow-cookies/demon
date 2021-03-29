@@ -5,7 +5,7 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import QuerySet
 
 from dependency.tasks import sync_project_dependencies
-from project.models import Project
+from project.models import Project, ProjectDependency
 
 
 def synchronize_project_dependencies(
@@ -33,3 +33,13 @@ class ProjectAdmin(ModelAdmin):
     )
     ordering = (Project.Fields.PATH,)
     actions = (synchronize_project_dependencies,)
+
+
+@register(ProjectDependency)
+class ProjectDependencyAdmin(ModelAdmin):
+    list_display = (
+        ProjectDependency.Fields.PROJECT,
+        ProjectDependency.Fields.DEPENDENCY,
+        ProjectDependency.Fields.VERSION,
+        ProjectDependency.Fields.SOURCE_FILE,
+    )

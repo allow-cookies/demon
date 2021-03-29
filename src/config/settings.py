@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "platform",
     "user",
     "user_platform",
+    "vulnerability",
 ]
 
 MIDDLEWARE = [
