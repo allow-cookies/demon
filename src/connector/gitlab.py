@@ -1,5 +1,6 @@
 import logging
-from typing import Generator
+import re
+from typing import Generator, Pattern, Type
 from uuid import UUID
 
 import gitlab
@@ -7,6 +8,7 @@ from gitlab import GitlabGetError
 
 from connector.base import PlatformConnector
 from dependency.dto import DependencyDTO
+from dependency.parser.base import BaseParser
 from dependency.parser.provider import parser_provider
 from project.dto import ProjectDTO
 from project.models import Project
@@ -14,7 +16,7 @@ from user_platform.models import UserPlatform
 
 
 class GitLabConnector(PlatformConnector):
-    _PER_PAGE = 999
+    _VISIBILITY = "private"
     _FIELD_NAME = "name"
     _FIELD_ID = "id"
 
@@ -22,9 +24,9 @@ class GitLabConnector(PlatformConnector):
         super().__init__(user_id=user_id)
         url, token = self._fetch_credentials(user_id)
         self._api = gitlab.Gitlab(url, private_token=token)
-        self._registered_dependency_file_types = (
-            parser_provider.list_registered_file_types()
-        )
+        self._parsers_regex_map: dict[Type[BaseParser], Pattern] = {
+            parser: parser.source_file_regex() for _, parser in parser_provider.all().items()
+        }
 
     @staticmethod
     def _fetch_credentials(user_id: UUID) -> tuple[str, str]:
@@ -37,16 +39,15 @@ class GitLabConnector(PlatformConnector):
         )
 
     def list_projects(self) -> Generator[ProjectDTO, None, None]:
-        for group in self._api.groups.list(per_page=self._PER_PAGE):
-            for project in group.projects.list(per_page=self._PER_PAGE):
-                yield ProjectDTO(
-                    external_id=project.id,
-                    name=project.name,
-                    path=project.path_with_namespace,
-                    description=project.description,
-                    created_at=project.created_at,
-                    dependencies=set(),
-                )
+        for project in self._api.projects.list(visibility=self._VISIBILITY, all=True):
+            yield ProjectDTO(
+                external_id=project.id,
+                name=project.name,
+                path=project.path_with_namespace,
+                description=project.description,
+                created_at=project.created_at,
+                dependencies=set(),
+            )
 
     def list_dependencies(
         self, project_id: UUID
@@ -58,13 +59,12 @@ class GitLabConnector(PlatformConnector):
         )
         project = self._api.projects.get(external_project_id, lazy=True)
         try:
-            for item in project.repository_tree():
-                if item[self._FIELD_NAME] in self._registered_dependency_file_types:
-                    contents = project.repository_raw_blob(item[self._FIELD_ID])
-                    parser = parser_provider.provide(item[self._FIELD_NAME])
-                    yield from parser.parse(
-                        source_file=item[self._FIELD_NAME], contents=contents
-                    )
+            for item in project.repository_tree(recursive=True, all=True):
+                file_name = item[self._FIELD_NAME]
+                for parser, pattern in self._parsers_regex_map.items():
+                    if re.fullmatch(pattern, file_name) is not None:
+                        contents = project.repository_raw_blob(item[self._FIELD_ID])
+                        yield from parser.parse(source_file=file_name, contents=contents)
         except GitlabGetError:
             logging.info(f"Repository tree for project {project_id} not found")
         yield from ()

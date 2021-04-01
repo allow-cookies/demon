@@ -2,7 +2,7 @@ from dependency.models import Dependency
 from project.models import ProjectDependency
 
 
-SOURCE_FILE_CHOICES = ProjectDependency.SourceFileChoices
+SOURCE_FILE_CHOICES = ProjectDependency.SourceTypeChoices
 LANGUAGE_CHOICES = Dependency.DependencyLanguageChoices
 
 SOURCE_FILE_LANGUAGE_MAP: dict[str, str] = {

@@ -1,4 +1,4 @@
-from django.db.models import CharField, TextChoices
+from django.db.models import CharField, TextChoices, UniqueConstraint
 from django.utils.translation import gettext_lazy as _
 
 from shared.models import UUIDModel
@@ -7,6 +7,9 @@ from shared.models import UUIDModel
 class Dependency(UUIDModel):
     class Meta:
         verbose_name_plural = _("Dependencies")
+        constraints = (
+            UniqueConstraint(name="name_language_uniq", fields=("name", "language")),
+        )
 
     class Fields(UUIDModel.Fields):
         NAME = "name"

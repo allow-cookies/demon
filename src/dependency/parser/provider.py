@@ -22,8 +22,11 @@ class ParserProvider:
     def list_registered_file_types(self) -> Iterable[str]:
         return self._parsers.keys()
 
+    def all(self) -> dict[str, Type[BaseParser]]:
+        return self._parsers
 
-source_file_choices = ProjectDependency.SourceFileChoices
+
+source_file_choices = ProjectDependency.SourceTypeChoices
 
 parser_provider = (
     ParserProvider()

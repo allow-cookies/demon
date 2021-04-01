@@ -1,3 +1,4 @@
+import logging
 from uuid import UUID
 
 from django.db.transaction import atomic
@@ -35,32 +36,39 @@ class Sync:
 
     @atomic
     def dependencies(self, project_id: UUID):
+        logging.info(f"Project {project_id} sync started.")
         project_dependency_versions = set()
         dependency_name_id_map = {
-            name: index
-            for name, index in Dependency.objects.values_list(
-                Dependency.Fields.NAME, Dependency.Fields.ID
+            f"{language}:{name}": index
+            for index, name, language in Dependency.objects.values_list(
+                Dependency.Fields.ID, Dependency.Fields.NAME, Dependency.Fields.LANGUAGE
             )
         }
         for dependency in self._connector.list_dependencies(project_id):
-            # TODO: add language filter as only name can end up with ambiguous results
-            index = dependency_name_id_map.get(dependency.name)
+            language = SourceFileToLanguageMapper.map(dependency.source_type)
+            index = dependency_name_id_map.get(f"{language}:{dependency.name}")
             if index is None:
-                dep = Dependency.objects.create(
+                dep, created = Dependency.objects.get_or_create(
                     name=dependency.name,
-                    language=SourceFileToLanguageMapper.map(dependency.source_file),
+                    language=language,
                 )
                 index = dep.id
-                dependency_name_id_map[dependency.name] = index
+                dependency_name_id_map[f"{language}:{dependency.name}"] = index
             project_dependency_versions.add(
                 ProjectDependency(
                     dependency_id=index,
                     project_id=project_id,
                     version=dependency.version,
+                    source_type=dependency.source_type,
                     source_file=dependency.source_file,
                 )
             )
+        project_dependencies_count = len(project_dependency_versions)
         ProjectDependency.objects.filter(project_id=project_id).delete()
         ProjectDependency.objects.bulk_create(
             objs=project_dependency_versions, batch_size=self._BATCH_SIZE
+        )
+        logging.info(
+            f"Project {project_id} synced successfully with "
+            f"{project_dependencies_count} dependencies."
         )

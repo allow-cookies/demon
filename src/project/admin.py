@@ -4,6 +4,7 @@ from django.contrib.admin import ModelAdmin, register
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import QuerySet
 
+from dependency.models import Dependency
 from dependency.tasks import sync_project_dependencies
 from project.models import Project, ProjectDependency
 
@@ -42,4 +43,11 @@ class ProjectDependencyAdmin(ModelAdmin):
         ProjectDependency.Fields.DEPENDENCY,
         ProjectDependency.Fields.VERSION,
         ProjectDependency.Fields.SOURCE_FILE,
+    )
+    list_filter = (
+        ProjectDependency.Fields.SOURCE_FILE,
+    )
+    search_fields = (
+        f"{ProjectDependency.Fields.PROJECT}__{Project.Fields.NAME}",
+        f"{ProjectDependency.Fields.DEPENDENCY}__{Dependency.Fields.NAME}",
     )

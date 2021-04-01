@@ -59,7 +59,7 @@ class ProjectDependency(UUIDModel):
         VERSION = "version"
         SOURCE_FILE = "source_file"
 
-    class SourceFileChoices(TextChoices):
+    class SourceTypeChoices(TextChoices):
         REQUIREMENTS_TXT = "requirements.txt", _("requirements.txt")
         PIPFILE_LOCK = "Pipfile.lock", _("Pipfile.lock")
         PACKAGE_LOCK_JSON = "package-lock.json", _("package-lock.json")
@@ -78,4 +78,5 @@ class ProjectDependency(UUIDModel):
         related_name=Project.Fields.DEPENDENCIES,
         related_query_name=Project.Fields.DEPENDENCIES,
     )
-    source_file = CharField(max_length=63, choices=SourceFileChoices.choices)
+    source_file = CharField(max_length=63)
+    source_type = CharField(max_length=63, choices=SourceTypeChoices.choices)

@@ -6,3 +6,4 @@ class DependencyDTO:
     name: str
     version: str
     source_file: str
+    source_type: str
